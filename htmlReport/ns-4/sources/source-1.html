@@ -1,0 +1,370 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > Mutant</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.mutant.dna.domain.model</a>
+</div>
+
+<h1>Coverage Summary for Class: Mutant (com.mutant.dna.domain.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Mutant</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    88.9%
+  </span>
+  <span class="absValue">
+    (8/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    85.7%
+  </span>
+  <span class="absValue">
+    (72/84)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.mutant.dna.domain.model;
+&nbsp;
+&nbsp;import java.util.Set;
+&nbsp;
+<b class="nc">&nbsp;public class Mutant {</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * letras válidas para la secuencia de ADN
+&nbsp;    **/
+<b class="fc">&nbsp;    private static final Set&lt;Character&gt; LETRAS_PERMITIDAS = Set.of(&#39;A&#39;, &#39;T&#39;, &#39;C&#39;, &#39;G&#39;);</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Verifica si se cumple con las secuencias
+&nbsp;     * Una secuencia es mutante si tiene al menos dos secuencias de cuatro caracteres consecutivos iguales en cualquier dirección.
+&nbsp;     *
+&nbsp;     * Este método optimiza el recorrido de la matriz ADN de tamaño N x N,
+&nbsp;     * en lugar de analizar cada posición se divide el recorrido en filas pares e impares donde
+&nbsp;     * las filas pares recorren cada tercera columna `columna += 3`, evitando posiciones redundantes y
+&nbsp;     * reduciendo el número de comparaciones al analizar solo una fracción de las posiciones. por otra parte,
+&nbsp;     * las filas impares realiza comprobaciones en posiciones intermedias con 2 pasos por 1 vacio.
+&nbsp;     *
+&nbsp;     * O(5n*n/12)
+&nbsp;     *
+&nbsp;     * @param dna Array de strings que representa la secuencia ADN en una matriz N x N.
+&nbsp;     * @return true si se identifican al menos dos secuencias de mutantes, false en caso contrario.
+&nbsp;     */
+&nbsp;    public static boolean isMutant(String[] dna) {
+<b class="fc">&nbsp;        int n = dna.length;</b>
+<b class="fc">&nbsp;        int numeroSecuenciasDeMutantes = 0;</b>
+&nbsp;
+&nbsp;
+<b class="fc">&nbsp;        boolean[][] posicionesVerificadas = new boolean[n][n];</b>
+&nbsp;
+<b class="fc">&nbsp;        for (int fila = 0; fila &lt; n; fila++) {</b>
+<b class="fc">&nbsp;            if (fila % 2 == 0) {</b>
+<b class="fc">&nbsp;                for (int col = 0; col &lt; n; col += 3) {</b>
+<b class="fc">&nbsp;                    if (verificarSecuencia(dna, fila, col, n, posicionesVerificadas)) {</b>
+<b class="fc">&nbsp;                        numeroSecuenciasDeMutantes++;</b>
+<b class="fc">&nbsp;                        if (numeroSecuenciasDeMutantes &gt; 1) return true;</b>
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            } else {
+<b class="fc">&nbsp;                for (int col = 1; col &lt; n; ) {</b>
+<b class="fc">&nbsp;                    if (verificarSecuencia(dna, fila, col, n, posicionesVerificadas)) {</b>
+<b class="fc">&nbsp;                        numeroSecuenciasDeMutantes++;</b>
+<b class="fc">&nbsp;                        if (numeroSecuenciasDeMutantes &gt; 1) return true;</b>
+&nbsp;                    }
+<b class="fc">&nbsp;                    col++;</b>
+<b class="fc">&nbsp;                    if (col &lt; n) {</b>
+<b class="fc">&nbsp;                        if (verificarSecuencia(dna, fila, col, n, posicionesVerificadas)) {</b>
+<b class="nc">&nbsp;                            numeroSecuenciasDeMutantes++;</b>
+<b class="nc">&nbsp;                            if (numeroSecuenciasDeMutantes &gt; 1) return true;</b>
+&nbsp;                        }
+&nbsp;                    }
+&nbsp;
+<b class="fc">&nbsp;                    col += 2;</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        return false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Verifica si hay una secuencia válida de mutante a partir de una posición específica.
+&nbsp;     *
+&nbsp;     * @param dna Secuencia de ADN.
+&nbsp;     * @param fila Fila de inicio.
+&nbsp;     * @param col Columna de inicio.
+&nbsp;     * @param n Tamaño de la matriz.
+&nbsp;     * @param posicionesVerificadas Matriz de posiciones ya verificadas.
+&nbsp;     * @return true si se encuentra una secuencia válida, false en caso contrario.
+&nbsp;     */
+&nbsp;    private static boolean verificarSecuencia(String[] dna, int fila, int col, int n, boolean[][] posicionesVerificadas) {
+<b class="fc">&nbsp;        char letraActual = dna[fila].charAt(col);</b>
+&nbsp;
+&nbsp;
+<b class="fc">&nbsp;        if (!posicionesVerificadas[fila][col]) {</b>
+<b class="fc">&nbsp;            int secuenciasEncontradas = 0;</b>
+<b class="fc">&nbsp;            secuenciasEncontradas += contarSecuenciaEnHorizontal(dna, fila, col, n, letraActual, posicionesVerificadas);</b>
+<b class="fc">&nbsp;            secuenciasEncontradas += contarSecuenciaEnVertical(dna, fila, col, n, letraActual, posicionesVerificadas);</b>
+<b class="fc">&nbsp;            secuenciasEncontradas += contarSecuenciaEnDiagonal(dna, fila, col, n, letraActual, posicionesVerificadas);</b>
+<b class="fc">&nbsp;            secuenciasEncontradas += contarSecuenciaEnAntiDiagonal(dna, fila, col, n, letraActual, posicionesVerificadas);</b>
+&nbsp;
+<b class="fc">&nbsp;            return secuenciasEncontradas &gt; 0;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private static int contarSecuenciaEnHorizontal(String[] dna, int row, int col, int n, char letraActual, boolean[][] posicionesVerificadas) {
+<b class="fc">&nbsp;        int conteo = 1;</b>
+&nbsp;
+<b class="fc">&nbsp;        for (int i = 1; i &lt; 4 &amp;&amp; col + i &lt; n; i++) {</b>
+<b class="fc">&nbsp;            if (dna[row].charAt(col + i) == letraActual) {</b>
+<b class="fc">&nbsp;                conteo++;</b>
+&nbsp;            } else {
+&nbsp;                break;
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        for (int i = 1; i &lt; 4 &amp;&amp; col - i &gt;= 0; i++) {</b>
+<b class="fc">&nbsp;            if (dna[row].charAt(col - i) == letraActual) {</b>
+<b class="fc">&nbsp;                conteo++;</b>
+&nbsp;            } else {
+&nbsp;                break;
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        if (conteo &gt;= 4) {</b>
+<b class="nc">&nbsp;            for (int i = 0; i &lt; 4; i++) {</b>
+<b class="nc">&nbsp;                if (col + i &lt; n) posicionesVerificadas[row][col + i] = true;</b>
+<b class="nc">&nbsp;                if (col - i &gt;= 0) posicionesVerificadas[row][col - i] = true;</b>
+&nbsp;            }
+<b class="nc">&nbsp;            return 1;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return 0;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cuenta secuencias verticales de cuatro caracteres consecutivos iguales en una posición específica de la matriz ADN.
+&nbsp;     *
+&nbsp;     * Este método verifica la columna de la fila en la dirección vertical hacia arriba y hacia abajo,
+&nbsp;     * buscando cuatro caracteres consecutivos iguales a la letra dada, en caso de encontrar una secuencia válida,
+&nbsp;     * marca las posiciones en la matriz posicionesVerificadas para evitar que se vuelvan a contar y retorna 1 para sumar a la secuencia.
+&nbsp;     * en otro caso retorna 0.
+&nbsp;     *
+&nbsp;     * @param dna                Array de strings que representa la matriz ADN.
+&nbsp;     * @param row                Fila inicial en la matriz donde empieza la búsqueda vertical.
+&nbsp;     * @param col                Columna inicial en la matriz donde empieza la búsqueda vertical.
+&nbsp;     * @param n                  Tamaño de la matriz (asumida como N x N).
+&nbsp;     * @param letraActual        Caracter de referencia que se busca en la secuencia vertical.
+&nbsp;     * @param posicionesVerificadas Matriz que marca las posiciones ya verificadas para evitar contar secuencias duplicadas.
+&nbsp;     * @return 1 si se encuentra una secuencia de cuatro caracteres consecutivos iguales, 0 si no se encuentra.
+&nbsp;     */
+&nbsp;    private static int contarSecuenciaEnVertical(String[] dna, int row, int col, int n, char letraActual, boolean[][] posicionesVerificadas) {
+<b class="fc">&nbsp;        int conteo = 1;</b>
+&nbsp;
+<b class="fc">&nbsp;        for (int i = 1; i &lt; 4 &amp;&amp; row + i &lt; n; i++) {</b>
+<b class="fc">&nbsp;            if (dna[row + i].charAt(col) == letraActual) {</b>
+<b class="fc">&nbsp;                conteo++;</b>
+&nbsp;            } else {
+&nbsp;                break;
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        for (int i = 1; i &lt; 4 &amp;&amp; row - i &gt;= 0; i++) {</b>
+<b class="fc">&nbsp;            if (dna[row - i].charAt(col) == letraActual) {</b>
+<b class="fc">&nbsp;                conteo++;</b>
+&nbsp;            } else {
+&nbsp;                break;
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        if (conteo &gt;= 4) {</b>
+<b class="fc">&nbsp;            for (int i = 0; i &lt; 4; i++) {</b>
+<b class="fc">&nbsp;                if (row + i &lt; n) posicionesVerificadas[row + i][col] = true;</b>
+<b class="fc">&nbsp;                if (row - i &gt;= 0) posicionesVerificadas[row - i][col] = true;</b>
+&nbsp;            }
+<b class="fc">&nbsp;            return 1;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return 0;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cuenta secuencias diagonales de cuatro caracteres consecutivos iguales en una posición específica de la matriz ADN.
+&nbsp;     *
+&nbsp;     * Este método verifica en la dirección diagonal (? y ?), hacia abajo a la derecha y hacia arriba a la izquierda,
+&nbsp;     * buscando cuatro caracteres consecutivos iguales a `letraActual`. Si encuentra una secuencia válida,
+&nbsp;     * marca las posiciones en la matriz `posicionesVerificadas` y retorna 1 para indicar la secuencia.
+&nbsp;     * En caso contrario, retorna 0.
+&nbsp;     *
+&nbsp;     * @param dna                Array de strings que representa la matriz ADN.
+&nbsp;     * @param row                Fila inicial en la matriz donde empieza la búsqueda diagonal.
+&nbsp;     * @param col                Columna inicial en la matriz donde empieza la búsqueda diagonal.
+&nbsp;     * @param n                  Tamaño de la matriz (asumida como N x N).
+&nbsp;     * @param letraActual        Carácter de referencia que se busca en la secuencia diagonal.
+&nbsp;     * @param posicionesVerificadas Matriz que marca las posiciones ya verificadas para evitar contar secuencias duplicadas.
+&nbsp;     * @return 1 si se encuentra una secuencia de cuatro caracteres consecutivos iguales, 0 si no se encuentra.
+&nbsp;     */
+&nbsp;    private static int contarSecuenciaEnDiagonal(String[] dna, int row, int col, int n, char letraActual, boolean[][] posicionesVerificadas) {
+<b class="fc">&nbsp;        int conteo = 1;</b>
+&nbsp;
+<b class="fc">&nbsp;        for (int i = 1; i &lt; 4 &amp;&amp; row + i &lt; n &amp;&amp; col + i &lt; n; i++) {</b>
+<b class="fc">&nbsp;            if (dna[row + i].charAt(col + i) == letraActual) {</b>
+<b class="fc">&nbsp;                conteo++;</b>
+&nbsp;            } else {
+&nbsp;                break;
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        for (int i = 1; i &lt; 4 &amp;&amp; row - i &gt;= 0 &amp;&amp; col - i &gt;= 0; i++) {</b>
+<b class="fc">&nbsp;            if (dna[row - i].charAt(col - i) == letraActual) {</b>
+<b class="fc">&nbsp;                conteo++;</b>
+&nbsp;            } else {
+&nbsp;                break;
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        if (conteo &gt;= 4) {</b>
+<b class="fc">&nbsp;            for (int i = 0; i &lt; 4; i++) {</b>
+<b class="fc">&nbsp;                if (row + i &lt; n &amp;&amp; col + i &lt; n) posicionesVerificadas[row + i][col + i] = true;</b>
+<b class="fc">&nbsp;                if (row - i &gt;= 0 &amp;&amp; col - i &gt;= 0) posicionesVerificadas[row - i][col - i] = true;</b>
+&nbsp;            }
+<b class="fc">&nbsp;            return 1;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return 0;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cuenta secuencias anti-diagonales de cuatro caracteres consecutivos iguales en una posición específica de la matriz ADN.
+&nbsp;     *
+&nbsp;     * Este método verifica en la dirección anti-diagonal (? y ?), hacia abajo a la izquierda y hacia arriba a la derecha,
+&nbsp;     * buscando cuatro caracteres consecutivos iguales a `letraActual`. Si encuentra una secuencia válida,
+&nbsp;     * marca las posiciones en la matriz `posicionesVerificadas` para evitar que se vuelvan a contar y retorna 1.
+&nbsp;     * En caso contrario, retorna 0.
+&nbsp;     *
+&nbsp;     * @param dna                Array de strings que representa la matriz ADN.
+&nbsp;     * @param row                Fila inicial en la matriz donde empieza la búsqueda anti-diagonal.
+&nbsp;     * @param col                Columna inicial en la matriz donde empieza la búsqueda anti-diagonal.
+&nbsp;     * @param n                  Tamaño de la matriz (asumida como N x N).
+&nbsp;     * @param letraActual        Carácter de referencia que se busca en la secuencia anti-diagonal.
+&nbsp;     * @param posicionesVerificadas Matriz que marca las posiciones ya verificadas para evitar contar secuencias duplicadas.
+&nbsp;     * @return 1 si se encuentra una secuencia de cuatro caracteres consecutivos iguales, 0 si no se encuentra.
+&nbsp;     */
+&nbsp;    private static int contarSecuenciaEnAntiDiagonal(String[] dna, int row, int col, int n, char letraActual, boolean[][] posicionesVerificadas) {
+<b class="fc">&nbsp;        int conteo = 1;</b>
+&nbsp;
+<b class="fc">&nbsp;        for (int i = 1; i &lt; 4 &amp;&amp; row + i &lt; n &amp;&amp; col - i &gt;= 0; i++) {</b>
+<b class="fc">&nbsp;            if (dna[row + i].charAt(col - i) == letraActual) {</b>
+<b class="nc">&nbsp;                conteo++;</b>
+&nbsp;            } else {
+&nbsp;                break;
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        for (int i = 1; i &lt; 4 &amp;&amp; row - i &gt;= 0 &amp;&amp; col + i &lt; n; i++) {</b>
+<b class="fc">&nbsp;            if (dna[row - i].charAt(col + i) == letraActual) {</b>
+<b class="fc">&nbsp;                conteo++;</b>
+&nbsp;            } else {
+&nbsp;                break;
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        if (conteo &gt;= 4) {</b>
+<b class="nc">&nbsp;            for (int i = 0; i &lt; 4; i++) {</b>
+<b class="nc">&nbsp;                if (row + i &lt; n &amp;&amp; col - i &gt;= 0) posicionesVerificadas[row + i][col - i] = true;</b>
+<b class="nc">&nbsp;                if (row - i &gt;= 0 &amp;&amp; col + i &lt; n) posicionesVerificadas[row - i][col + i] = true;</b>
+&nbsp;            }
+<b class="nc">&nbsp;            return 1;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return 0;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Verifica si un carácter es permitido en la secuencia de ADN.
+&nbsp;     *
+&nbsp;     * @param letraActual Carácter a verificar.
+&nbsp;     * @return true si el carácter está en el conjunto de letras permitidas, false en caso contrario.
+&nbsp;     */
+&nbsp;    public static boolean esLetraPermitida(char letraActual) {
+<b class="fc">&nbsp;        return LETRAS_PERMITIDAS.contains(letraActual);</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-11-12 03:49</div>
+</div>
+</body>
+</html>

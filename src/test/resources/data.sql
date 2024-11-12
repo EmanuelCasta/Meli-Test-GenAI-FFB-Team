@@ -1,0 +1,2 @@
+INSERT INTO tcap_dnamutant (id_mutant, is_mutant) VALUES ('okasdoadko2k2k1o23123o21o3k2o312o3', true);
+INSERT INTO tcap_dnamutant (id_mutant, is_mutant) VALUES ('31231fdgdfgdfgfgdfgd644561o3k2o312o4', false);

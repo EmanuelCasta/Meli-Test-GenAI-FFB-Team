@@ -21,7 +21,7 @@ La API consta de dos controladores principales:
 ## Probar Proyecto Desplegado
 
 La API esta disponible a internet por tiempo limitado hasta 30 de noviembre del 2024.
-Tener presente que los servicio montando se suspenden por inactividad, por lo tanto, mandar la peticion y esperar de 30s a 60s al que servicio responda.
+Tener presente que los servicio montando se suspenden por inactividad, por lo tanto, mandar la peticion y esperar de 40s a 3 minutos al que servicio responda.
 - **Url** https://dna-latest.onrender.com
 - **Endpoints disponible** :
   - **/mutant/** : https://dna-latest.onrender.com/mutant/

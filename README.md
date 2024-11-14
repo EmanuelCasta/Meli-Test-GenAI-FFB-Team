@@ -17,6 +17,7 @@ Este proyecto es una aplicación de **Spring WebFlux** que determina si una secu
 La API consta de dos controladores principales:
 - **DnaControllerCommand**: Recibe secuencias de ADN y determina si pertenecen a un mutante.
 - **DnaControllerQuery**: Proporciona estadísticas sobre el número de secuencias de ADN mutante y humano procesadas.
+- La funcion isMutant se encuentra en **"src/main/com/mutant/dna/domain/model/Mutant"**
 
 ## Probar Proyecto Desplegado
 

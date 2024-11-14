@@ -22,7 +22,7 @@ public class ExceptionConfig {
         body.put("status", ex.getStatusCode().value());
         body.put("error", ex.getStatusCode().isError());
         body.put("message", ex.getReason());
-        body.put("path", "/mutant/ - /mutant");
+        body.put("path", "/mutant/ - /stat/");
 
         return new ResponseEntity<>(body, ex.getStatusCode());
     }
